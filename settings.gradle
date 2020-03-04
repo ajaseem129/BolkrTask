@@ -1,0 +1,2 @@
+rootProject.name='BolkrTest'
+include ':app'
