@@ -27,14 +27,15 @@ import java.util.Date;
 public class MainActivity extends AppCompatActivity {
     ProgressDialog pd;
     RecyclerView contentRecycler;
+    ArrayList<contentModel> contentList= new ArrayList<contentModel>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        LoadContent lc = new LoadContent();
-        lc.execute();
         contentRecycler= (RecyclerView) findViewById(R.id.contentRecycler);
+        new LoadContent().execute();
     }
 
 
@@ -51,7 +52,6 @@ public class MainActivity extends AppCompatActivity {
         }
         try {
             JSONArray arr = new JSONArray(response);
-            ArrayList<contentModel> contentList= new ArrayList<contentModel>();
             for (int i=0;i<arr.length();i++)
             {
                 JSONObject cont = arr.getJSONObject(i);
@@ -70,11 +70,9 @@ public class MainActivity extends AppCompatActivity {
                 }
                 model.setLink(cont.getString("p"));
 
+
                 contentList.add(model);
             }
-            contentAdapter adapter = new contentAdapter(contentList, MainActivity.this);
-            contentRecycler.setLayoutManager(new GridLayoutManager(getApplicationContext(), 4));
-            contentRecycler.setAdapter(adapter);
         }
         catch (Exception e)
         {
@@ -82,6 +80,14 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+    public void setupRecycler()
+    {
+
+        contentAdapter adapter = new contentAdapter(contentList, MainActivity.this);
+        contentRecycler.setLayoutManager(new GridLayoutManager(getApplicationContext(), 3));
+        contentRecycler.setAdapter(adapter);
+    }
+
 
 
     class LoadContent extends AsyncTask<Void,Void,Void> {
@@ -130,6 +136,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Void result) {
+            setupRecycler();
             if (pd != null && pd.isShowing()) {
                 pd.dismiss();
             }
